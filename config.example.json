@@ -1,0 +1,22 @@
+{
+  "host": "127.0.0.1",
+  "port": 8080,
+  "admin_token": "replace-this-with-a-random-admin-token-at-least-32-chars",
+  "tenants": [
+    {
+      "id": "tenant-a",
+      "api_key": "replace-this-with-a-random-tenant-token-at-least-32-chars",
+      "allowed_path_prefixes": ["/api"],
+      "scopes": ["catalog:read"],
+      "requests_per_minute": 60
+    }
+  ],
+  "routes": [
+    {
+      "id": "catalog",
+      "prefix": "/api",
+      "target": "http://127.0.0.1:9000",
+      "required_scopes": ["catalog:read"]
+    }
+  ]
+}

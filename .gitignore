@@ -1,0 +1,7 @@
+__pycache__/
+.pytest_cache/
+.venv/
+*.py[cod]
+config.json
+.env
+coverage.xml
