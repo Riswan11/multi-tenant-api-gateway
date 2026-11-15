@@ -26,6 +26,10 @@ python -m gateway.main
 
 The gateway listens on `127.0.0.1:8080` by default. Set `GATEWAY_CONFIG` to load a different JSON configuration file. Use `0.0.0.0` only when remote connections are needed and the service is protected by a trusted network edge. Audit events are newline-delimited JSON written to standard output.
 
+## DigitalOcean App Platform
+
+The included `Dockerfile` builds the gateway as a web service on port `8080`. For App Platform, set an encrypted `GATEWAY_CONFIG_JSON` environment variable containing the gateway configuration, with `host` set to `0.0.0.0` and `port` set to `8080`. Use real secrets and upstream URLs reachable from App Platform; `127.0.0.1` refers to the app container itself. The `routes` list can be empty initially, and routes can be added later through the admin API.
+
 ## Configuration and token issuance
 
 `config.example.json` shows the supported configuration:

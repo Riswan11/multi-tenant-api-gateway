@@ -381,11 +381,27 @@ def create_app(
 
 
 def load_config(path: str | Path | None = None) -> GatewayConfig:
-    config_path = Path(path or os.environ.get("GATEWAY_CONFIG", "config.json"))
-    try:
-        payload = json.loads(config_path.read_text(encoding="utf-8"))
-    except (OSError, json.JSONDecodeError) as error:
-        raise RuntimeError(f"unable to load gateway configuration {config_path}: {error}") from error
+    config_path = path or os.environ.get("GATEWAY_CONFIG")
+    if config_path is None:
+        config_json = os.environ.get("GATEWAY_CONFIG_JSON")
+        if config_json is None:
+            config_path = Path("config.json")
+        else:
+            try:
+                payload = json.loads(config_json)
+            except json.JSONDecodeError as error:
+                raise RuntimeError(
+                    f"unable to load gateway configuration from GATEWAY_CONFIG_JSON: {error}"
+                ) from error
+
+    if config_path is not None:
+        config_path = Path(config_path)
+        try:
+            payload = json.loads(config_path.read_text(encoding="utf-8"))
+        except (OSError, json.JSONDecodeError) as error:
+            raise RuntimeError(
+                f"unable to load gateway configuration {config_path}: {error}"
+            ) from error
     try:
         return GatewayConfig.model_validate(payload)
     except ValidationError as error:

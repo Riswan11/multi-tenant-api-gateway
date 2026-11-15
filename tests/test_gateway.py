@@ -1,9 +1,36 @@
 from __future__ import annotations
 
+import json
+
 import httpx
 
-from gateway.main import _filtered_headers
+from gateway.main import _filtered_headers, load_config
 from tests.conftest import ADMIN_TOKEN, TENANT_TOKEN
+
+
+def test_load_config_reads_inline_json_environment(monkeypatch) -> None:
+    monkeypatch.delenv("GATEWAY_CONFIG", raising=False)
+    monkeypatch.setenv(
+        "GATEWAY_CONFIG_JSON",
+        json.dumps({
+            "host": "0.0.0.0",
+            "port": 8080,
+            "admin_token": "admin-token-that-is-long-enough-for-tests-123",
+            "tenants": [{
+                "id": "tenant-a",
+                "api_key": "tenant-token-that-is-long-enough-for-tests-123",
+                "allowed_path_prefixes": ["/api"],
+                "requests_per_minute": 60,
+            }],
+            "routes": [],
+        }),
+    )
+
+    config = load_config()
+
+    assert config.host == "0.0.0.0"
+    assert config.port == 8080
+    assert config.routes == ()
 
 
 def test_proxy_strips_connection_nominated_headers() -> None:
